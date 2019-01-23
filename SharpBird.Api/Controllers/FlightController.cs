@@ -19,7 +19,7 @@ namespace SharpBird.Api.Controllers
         {
             var result = Helpers.EvaluateWithElapsed(() =>
             {
-                using (var ryan = new RyanUtil())
+                using (var ryan = new RyanBird())
                 {
                     return ryan
                         .GetFlights(origin, destination, DateTime.Today.AddDays(1))

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SharpBird.Ryan.Exceptions
+namespace SharpBird.Exceptions
 {
     public class BlacklistedException : Exception
     {

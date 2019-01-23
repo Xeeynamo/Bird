@@ -11,7 +11,7 @@ namespace SharpBird.Tests
         [Fact]
         public async Task GetFlightsAvailabilityTest()
         {
-            using (var ryan = new RyanUtil())
+            using (var ryan = new RyanBird())
             {
                 var origin = "STN";
                 var destination = "NYO";
@@ -37,7 +37,7 @@ namespace SharpBird.Tests
         [Fact]
         public void GetFlightsTest()
         {
-            using (var ryan = new RyanUtil())
+            using (var ryan = new RyanBird())
             {
                 var origin = "STN";
                 var destination = "NYO";
