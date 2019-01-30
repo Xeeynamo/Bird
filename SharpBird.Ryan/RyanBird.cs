@@ -14,44 +14,43 @@ namespace SharpBird.Ryan
     {
         private static readonly string BaseApi = "https://desktopapps.ryanair.com/v4/en-ie/";
         private static readonly string Provider = "Ryanair";
-        
+
         public IEnumerable<FlightModel> Search(string origin, string destination, DateTime startDate)
         {
-            using (var httpClient = NewHttpClient())
-            {
-                return GetFlights(httpClient, origin, destination, startDate)
-                    .Where(x => x.Flights.Any())
-                    .Select(x => new
-                    {
-                        Date = x.DateOut,
-                        Flight = x.Flights.First()  // TODO not a nice hack. Do a SelectMany while maintaining the Date
-                    })
-                    .Where(x => x.Flight.RegularFare.Fares.Any())
-                    .Select(x => new
-                    {
-                        x.Date,
-                        x.Flight,
-                        Fare = x.Flight.RegularFare.Fares
-                            .OrderBy(fare => Math.Min(fare.Amount, fare.PublishedFare))
-                            .FirstOrDefault()
-                    })
-                    .Select(x => new FlightModel
-                    {
-                        Id = string.Empty,
-                        Provider = Provider,
-                        Origin = origin,
-                        Destination = destination,
-                        Date = x.Date,
-                        Price = x.Fare.Amount,
-                        Duration = x.Flight.Duration,
-                        RegisteredDate = DateTime.UtcNow,
-                    });
-            }
+            return GetFlights(origin, destination, startDate)
+                .Where(x => x.Flights.Any())
+                .SelectMany(x => x.Flights)
+                .Where(x => x.RegularFare.Fares.Any())
+                .Select(x => new
+                {
+                    Flight = x,
+                    MinimumFare = x.RegularFare.Fares
+                        .OrderBy(fare => Math.Min(fare.Amount, fare.PublishedFare))
+                        .FirstOrDefault()
+                })
+                .Select(x => new FlightModel
+                {
+                    Id = x.Flight.FlightKey,
+                    Provider = Provider,
+                    Origin = origin,
+                    Destination = destination,
+                    TimeDeparture = x.Flight.Time.First(),
+                    TimeArrival = x.Flight.Time.Last(),
+                    TimeDepartureUtc = x.Flight.TimeUTC.First(),
+                    TimeArrivalUtc = x.Flight.TimeUTC.Last(),
+                    Duration = x.Flight.Duration,
+                    Segments = x.Flight.Segments.Count,
+                    Price = x.MinimumFare.Amount,
+                    RemainingSeats = x.Flight.FaresLeft,
+                    RegisteredDate = DateTime.UtcNow,
+                });
         }
 
-        private IEnumerable<TripDates> GetFlights(HttpClient client, string origin, string destination, DateTime dateOut)
+        private IEnumerable<TripDates> GetFlights(string origin, string destination, DateTime dateOut)
         {
             List<TripDates> tripDates;
+
+            using var client = NewHttpClient();
             do
             {
                 tripDates = GetFlightsDates(client, origin, destination, dateOut)
@@ -68,12 +67,12 @@ namespace SharpBird.Ryan
             } while (tripDates?.Count > 0);
         }
 
-        //public async IAsyncEnumerable<TripDates> GetFlightsAsync(string origin, string destination, DateTime dateOut)
+        //public async IAsyncEnumerable<TripDates> GetFlightsAsync(HttpClient client, string origin, string destination, DateTime dateOut)
         //{
         //    List<TripDates> tripDates;
         //    do
         //    {
-        //        tripDates = await GetFlightsDates(origin, destination, dateOut);
+        //        tripDates = await GetFlightsDates(client, origin, destination, dateOut);
         //        foreach (var tripDate in tripDates)
         //        {
         //            yield return tripDate;

@@ -1,4 +1,7 @@
-﻿namespace SharpBird.Ryan.Models
+﻿using System;
+using System.Collections.Generic;
+
+namespace SharpBird.Ryan.Models
 {
     public class TripFlight
     {
@@ -12,13 +15,13 @@
 
         public string OperatedBy { get; set; }
 
-        // Segments
+        public List<Segment> Segments { get; set; }
 
         public string FlightNumber { get; set; }
 
-        // Time
+        public DateTime[] Time { get; set; }
 
-        // TimeUtc
+        public DateTime[] TimeUTC { get; set; }
 
         public string Duration { get; set; }
     }

@@ -7,5 +7,7 @@ namespace SharpBird
     public interface IBirdSearch
     {
         IEnumerable<FlightModel> Search(string origin, string destination, DateTime startDate);
+
+        //IAsyncEnumerable<FlightModel> SearchAsync(string origin, string destination, DateTime startDate);
     }
 }

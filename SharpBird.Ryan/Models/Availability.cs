@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SharpBird.Ryan.Models
 {
@@ -11,5 +12,7 @@ namespace SharpBird.Ryan.Models
         public int CurrPrecision { get; set; }
 
         public IEnumerable<Trip> Trips { get; set; }
+
+        public DateTime ServerTimeUTC { get; set; }
     }
 }

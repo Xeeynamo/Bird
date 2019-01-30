@@ -12,11 +12,21 @@ namespace SharpBird.Models
 
         public string Destination { get; set; }
 
-        public DateTime Date { get; set; }
+        public DateTime TimeDeparture { get; set; }
+
+        public DateTime TimeArrival { get; set; }
+
+        public DateTime TimeDepartureUtc { get; set; }
+
+        public DateTime TimeArrivalUtc { get; set; }
+
+        public string Duration { get; set; }
+
+        public int Segments { get; set; }
 
         public double Price { get; set; }
 
-        public string Duration { get; set; }
+        public int RemainingSeats { get; set; }
 
         public DateTime RegisteredDate { get; set; }
     }

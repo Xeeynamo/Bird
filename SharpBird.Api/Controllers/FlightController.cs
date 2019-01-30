@@ -19,19 +19,15 @@ namespace SharpBird.Api.Controllers
         {
             var result = Helpers.EvaluateWithElapsed(() =>
             {
-                using (var ryan = new RyanBird())
-                {
-                    return ryan
-                        .GetFlights(origin, destination, DateTime.Today.AddDays(1))
-                        .Where(x => x.Flights.Any())
-                        .GroupBy(x => x.Flights.Min(flight => flight.RegularFare.Fares.Min(fare => fare.Amount)))
-                        .Select(x => new FlightViewModel()
-                        {
-                            Fare = x.Key,
-                            Dates = x.Select(flight => flight.DateOut).ToList()
-                        })
-                        .ToList();
-                }
+                return new RyanBird()
+                    .Search(origin, destination, DateTime.Today.AddDays(1))
+                    .GroupBy(x => x.Price)
+                    .Select(x => new FlightViewModel()
+                    {
+                        Fare = x.Key,
+                        Dates = x.Select(flight => flight.Time).ToList()
+                    })
+                    .ToList();
             });
 
             return new GenericResultViewModel<FlightResultViewModel>
