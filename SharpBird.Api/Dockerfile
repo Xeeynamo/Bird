@@ -8,6 +8,7 @@ WORKDIR /src
 COPY ["SharpBird.Api/SharpBird.Api.csproj", "SharpBird.Api/"]
 RUN dotnet restore "SharpBird.Api/SharpBird.Api.csproj"
 COPY . .
+RUN dotnet test
 WORKDIR "/src/SharpBird.Api"
 RUN dotnet build "SharpBird.Api.csproj" -c Release -o /app
 
