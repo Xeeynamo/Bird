@@ -1,4 +1,4 @@
-﻿using SharpBird.Ryan.Models;
+using SharpBird.Ryan.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +30,7 @@ namespace SharpBird.Ryan
                 })
                 .Select(x => new FlightModel
                 {
-                    Id = x.Flight.FlightKey,
+                    ProviderId = x.Flight.FlightKey,
                     Provider = Provider,
                     Origin = origin,
                     Destination = destination,

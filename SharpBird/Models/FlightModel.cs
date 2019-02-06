@@ -4,7 +4,9 @@ namespace SharpBird.Models
 {
     public class FlightModel
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
+
+        public string ProviderId { get; set; }
 
         public string Provider { get; set; }
 

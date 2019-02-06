@@ -1,15 +1,24 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28407.52
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpBird.Ryan", "SharpBird.Ryan\SharpBird.Ryan.csproj", "{32771087-63CC-4CC5-8476-0EF3C14C176F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpBird.Tests", "SharpBird.Tests\SharpBird.Tests.csproj", "{5D47BBF5-2A53-4F8F-827C-2C84EFAD88A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpBird.Api", "SharpBird.Api\SharpBird.Api.csproj", "{C605CF8E-A3E6-4D27-AB4F-52C1021DE903}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpBird.Api", "SharpBird.Api\SharpBird.Api.csproj", "{C605CF8E-A3E6-4D27-AB4F-52C1021DE903}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpBird", "SharpBird\SharpBird.csproj", "{07B8CB42-AE0D-4330-A6F4-40520D323DD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpBird", "SharpBird\SharpBird.csproj", "{07B8CB42-AE0D-4330-A6F4-40520D323DD0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B7CCFD43-B194-4CAE-A7EA-4E1033592FB2}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpBird.Mongo", "SharpBird.Mongo\SharpBird.Mongo.csproj", "{EA24BDBA-F79B-4323-9BCA-F76C93E5DFDF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpBird.Redis", "SharpBird.Redis\SharpBird.Redis.csproj", "{090B6421-2C5E-42A9-A531-FE478667F02B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +42,14 @@ Global
 		{07B8CB42-AE0D-4330-A6F4-40520D323DD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07B8CB42-AE0D-4330-A6F4-40520D323DD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07B8CB42-AE0D-4330-A6F4-40520D323DD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA24BDBA-F79B-4323-9BCA-F76C93E5DFDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA24BDBA-F79B-4323-9BCA-F76C93E5DFDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA24BDBA-F79B-4323-9BCA-F76C93E5DFDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA24BDBA-F79B-4323-9BCA-F76C93E5DFDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{090B6421-2C5E-42A9-A531-FE478667F02B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{090B6421-2C5E-42A9-A531-FE478667F02B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{090B6421-2C5E-42A9-A531-FE478667F02B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{090B6421-2C5E-42A9-A531-FE478667F02B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

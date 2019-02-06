@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SharpBird.Api.ViewModels;
 using SharpBird.Api.Utils;
+using SharpBird.Mongo;
 using SharpBird.Ryan;
 
 namespace SharpBird.Api.Controllers
@@ -12,6 +13,18 @@ namespace SharpBird.Api.Controllers
     [ApiController]
     public class FlightController : ControllerBase
     {
+        private IBirdSearch _birdSearch;
+
+        public FlightController() :
+            this(new MongoBirdSearch(new RyanBird(), TimeSpan.FromHours(23), "bird"))
+        {
+        }
+
+        public FlightController(IBirdSearch birdSearch)
+        {
+            _birdSearch = birdSearch;
+        }
+
         [HttpGet]
         public ActionResult<GenericResultViewModel<FlightResultViewModel>> Get(
             [FromQuery] string origin = "STN",
@@ -19,13 +32,13 @@ namespace SharpBird.Api.Controllers
         {
             var result = Helpers.EvaluateWithElapsed(() =>
             {
-                return new RyanBird()
+                return _birdSearch
                     .Search(origin, destination, DateTime.Today.AddDays(1))
                     .GroupBy(x => x.Price)
                     .Select(x => new FlightViewModel()
                     {
                         Fare = x.Key,
-                        Dates = x.Select(flight => flight.Time).ToList()
+                        Dates = x.Select(flight => flight.TimeDepartureUtc).ToList()
                     })
                     .ToList();
             });
