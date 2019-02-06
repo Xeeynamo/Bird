@@ -1,0 +1,22 @@
+version: '3'
+services:
+  # bird:
+  #   container_name: bird
+  #   restart: always
+  #   build: .
+  #   ports:
+  #     - 80
+  #     - 443
+  #   links:
+  #     - redis
+  #     - mongo
+  mongo:
+    container_name: bird-mongo
+    image: mongo
+    ports:
+      - 27017:27017
+  redis:
+    container_name: bird-redis
+    image: redis
+    ports:
+      - 6379:6379
