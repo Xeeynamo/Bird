@@ -18,6 +18,8 @@ namespace SharpBird.Mongo
             public DateTime RegisterDate { get; set; }
 
             public int FlightsFound { get; set; }
+
+            public string SourceDestination { get; set; }
         }
 
 
@@ -50,7 +52,7 @@ namespace SharpBird.Mongo
 
         public IEnumerable<FlightModel> Search(string origin, string destination, DateTime startDate)
         {
-            if (IsCacheStillValid())
+            if (IsCacheStillValid(origin, destination))
                 return GetCachedItems(origin, destination, startDate);
 
             IEnumerable<FlightModel> result;
@@ -60,7 +62,7 @@ namespace SharpBird.Mongo
                 result = GetUncachedItems(origin, destination, startDate)
                     .ToList();
                 
-                AddItemsToCache(result);
+                AddItemsToCache(result, origin, destination);
             }
             catch (BlacklistedException e)
             {
@@ -91,25 +93,33 @@ namespace SharpBird.Mongo
             return _birdSearch.Search(origin, destination, startDate);
         }
 
-        private void AddItemsToCache(IEnumerable<FlightModel> items)
+        private void AddItemsToCache(IEnumerable<FlightModel> items, string origin, string destination)
         {
             var list = items as ICollection<FlightModel> ?? items.ToList();
             _records.InsertOne(new RecordInfo
             {
                 Id = ObjectId.GenerateNewId(),
                 RegisterDate = DateTime.UtcNow,
-                FlightsFound = list.Count
+                FlightsFound = list.Count,
+                SourceDestination = GetSrcDstKeyPair(origin, destination)
             });
 
             _flights.InsertMany(items);
         }
 
-        private bool IsCacheStillValid()
+        private bool IsCacheStillValid(string origin, string destination)
         {
             var cacheExpirationDate = GetCacheExpirationDate();
-            return _records.AsQueryable().Any(x => x.RegisterDate > cacheExpirationDate);
+            var keyPair = GetSrcDstKeyPair(origin, destination);
+
+            return _records.AsQueryable().Any(x => x.RegisterDate > cacheExpirationDate && x.SourceDestination == keyPair);
         }
 
         private DateTime GetCacheExpirationDate() => DateTime.UtcNow - _expiration;
+
+        private static string GetSrcDstKeyPair(string origin, string destination)
+        {
+            return $"{origin}-{destination}";
+        }
     }
 }

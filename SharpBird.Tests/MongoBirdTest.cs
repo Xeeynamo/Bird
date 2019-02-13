@@ -62,8 +62,25 @@ namespace SharpBird.Tests
             Assert.Equal(2, birdSearch.ReceivedCalls().Count());
         }
 
-        private IEnumerable<FlightModel> GetRandomFlights(int count) =>
-            Enumerable.Range(0, count).Select(GetRandomFlight);
+        [Fact]
+        public void CacheShouldWorkOnlyWithASpecificTrip()
+        {
+            var birdSearch = Substitute.For<IBirdSearch>();
+            birdSearch.Search(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DateTime>())
+                .Returns(GetRandomFlights(10));
+            mongoBirdSearch = new MongoBirdSearch(birdSearch, TimeSpan.FromHours(1));
+
+            Assert.Empty(birdSearch.ReceivedCalls());
+            mongoBirdSearch.Search("mockSrc1", "mockDst", DateTime.Now);
+            Assert.Single(birdSearch.ReceivedCalls());
+            mongoBirdSearch.Search("mockSrc2", "mockDst", DateTime.Now);
+            Assert.Equal(2, birdSearch.ReceivedCalls().Count());
+            Assert.Equal("mockSrc1", birdSearch.ReceivedCalls().Skip(0).First().GetArguments().First());
+            Assert.Equal("mockSrc2", birdSearch.ReceivedCalls().Skip(1).First().GetArguments().First());
+        }
+
+        private IEnumerable<FlightModel> GetRandomFlights(int count, int seed = 0) =>
+            Enumerable.Range(0, count).Select(x => GetRandomFlight(count * 1000 + seed * 50 + x));
 
         private FlightModel GetRandomFlight(int seed)
         {
