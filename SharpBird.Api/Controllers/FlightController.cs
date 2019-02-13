@@ -13,12 +13,7 @@ namespace SharpBird.Api.Controllers
     [ApiController]
     public class FlightController : ControllerBase
     {
-        private IBirdSearch _birdSearch;
-
-        public FlightController() :
-            this(new MongoBirdSearch(new RyanBird(), TimeSpan.FromHours(23), "bird"))
-        {
-        }
+        private readonly IBirdSearch _birdSearch;
 
         public FlightController(IBirdSearch birdSearch)
         {
@@ -28,7 +23,7 @@ namespace SharpBird.Api.Controllers
         [HttpGet]
         public ActionResult<GenericResultViewModel<FlightResultViewModel>> Get(
             [FromQuery] string origin = "STN",
-            [FromQuery] string destination = "NYO")
+            [FromQuery] string destination = "BDS")
         {
             var result = Helpers.EvaluateWithElapsed(() =>
             {
