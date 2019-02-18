@@ -112,6 +112,41 @@ namespace SharpBird.Tests
             });
         }
 
+        [Fact]
+        public void ShouldReturnOnlyLatestVersionOfAFlight()
+        {
+            const string FlightSrc = "TST1";
+            const string FlightDst = "TST2";
+
+            var birdSearch = Substitute.For<IBirdSearch>();
+            birdSearch.Search(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DateTime>())
+                .Returns(GetRandomFlights(10, 0, FlightSrc, FlightDst));
+            mongoBirdSearch = new MongoBirdSearch(birdSearch, TimeSpan.FromMilliseconds(0));
+
+            var oldItems = mongoBirdSearch.Search(FlightSrc, FlightDst, DateTime.Now).ToList();
+            Assert.Equal(10, oldItems.Count);
+
+            var newItems = mongoBirdSearch.Search(FlightSrc, FlightDst, DateTime.Now).ToList();
+
+            mongoBirdSearch.Expiration = TimeSpan.FromHours(1);
+            var actualItems = mongoBirdSearch.Search(FlightSrc, FlightDst, DateTime.Now).ToList();
+            Assert.Equal(10, actualItems.Count);
+
+            Assert.Equal(2, birdSearch.ReceivedCalls().Count());
+
+            var expected1 = newItems.Join(oldItems, x => x.ProviderId, x => x.ProviderId, (newer
+                , older) => new {newer, older})
+                .ToList();
+            Assert.Equal(10, expected1.Count());
+            Assert.All(expected1,x => Assert.True(x.newer.RegisteredDate > x.older.RegisteredDate));
+
+            var expected2 = newItems.Join(actualItems, x => x.ProviderId, x => x.ProviderId, (newer
+                , actual) => new { newer, actual })
+                .ToList();
+            Assert.Equal(10, expected2.Count());
+            Assert.All(expected2, x => Assert.True(x.newer.Id == x.actual.Id));
+        }
+
         private IEnumerable<FlightModel> GetRandomFlights(int count, int seed = 0, string origin = null, string destination = null) =>
             Enumerable.Range(0, count).Select(x => GetRandomFlight(count * 1000 + seed * 50 + x, origin, destination));
 
@@ -134,7 +169,7 @@ namespace SharpBird.Tests
                 Segments = 1,
                 Price = PseudoRandomUtil.RandomDouble(seed) * 100.0,
                 RemainingSeats = 5,
-                RegisteredDate = DateTime.Today
+                RegisteredDate = DateTime.UtcNow
             };
         }
     }
