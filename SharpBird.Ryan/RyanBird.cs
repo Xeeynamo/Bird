@@ -18,9 +18,9 @@ namespace SharpBird.Ryan
         public IEnumerable<FlightModel> Search(string origin, string destination, DateTime startDate)
         {
             return GetFlights(origin, destination, startDate)
-                .Where(x => x.Flights.Any())
+                .Where(x => x.Flights?.Any() ?? false)
                 .SelectMany(x => x.Flights)
-                .Where(x => x.RegularFare.Fares.Any())
+                .Where(x => x.RegularFare?.Fares?.Any() ?? false)
                 .Select(x => new
                 {
                     Flight = x,
