@@ -84,13 +84,11 @@ namespace SharpBird.Mongo
             return _flights
                 .AsQueryable()
                 .Where(x => x.Origin == origin && x.Destination == destination && x.TimeDepartureUtc >= startDate)
-                .OrderByDescending(x => x.RegisteredDate)
-                .ThenBy(x => x.TimeDepartureUtc)
-                .GroupBy(x => x.ProviderId)
+                .OrderBy(x => x.TimeDepartureUtc)
                 .AsEnumerable()
+                .GroupBy(x => x.ProviderId)
                 .Where(x => x.Any())
-                .Select(x => x.First())
-                ;
+                .Select(x => x.OrderByDescending(y => y.RegisteredDate).First());
         }
 
         private IEnumerable<FlightModel> GetUncachedItems(string origin, string destination, DateTime startDate)
