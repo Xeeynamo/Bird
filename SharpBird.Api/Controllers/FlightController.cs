@@ -30,6 +30,7 @@ namespace SharpBird.Api.Controllers
                 return _birdSearch
                     .Search(origin, destination, DateTime.Today.AddDays(1))
                     .GroupBy(x => x.Price)
+                    .OrderByDescending(x => x.Key)
                     .Select(x => new FlightViewModel()
                     {
                         Fare = x.Key,
