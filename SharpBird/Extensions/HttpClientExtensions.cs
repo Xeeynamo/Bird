@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -25,8 +26,16 @@ namespace SharpBird.Extensions
                         throw new ProxyAuthenticationRequiredException();
                 }
 
-                var content = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<T>(content);
+                try
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<T>(content);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Exception {e.Message} on request {uri}");
+                    throw;
+                }
             }
         }
     }

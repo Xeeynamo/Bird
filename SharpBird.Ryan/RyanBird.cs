@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using SharpBird.Exceptions;
 using SharpBird.Models;
 using SharpBird.Extensions;
 
@@ -18,6 +19,7 @@ namespace SharpBird.Ryan
         public IEnumerable<FlightModel> Search(string origin, string destination, DateTime startDate)
         {
             return GetFlights(origin, destination, startDate)
+                .AsParallel()
                 .Where(x => x.Flights?.Any() ?? false)
                 .SelectMany(x => x.Flights)
                 .Where(x => x.RegularFare?.Fares?.Any() ?? false)
@@ -53,10 +55,23 @@ namespace SharpBird.Ryan
             using var client = NewHttpClient();
             do
             {
-                tripDates = GetFlightsDates(client, origin, destination, dateOut)
-                    .Result
-                    .Where(x => x.Flights.Any())
-                    .ToList();
+                try
+                {
+                    tripDates = GetFlightsDates(client, origin, destination, dateOut)
+                        .Result
+                        .Where(x => x.Flights.Any())
+                        .ToList();
+                }
+                catch (BlacklistedException e)
+                {
+                    Console.WriteLine("Banned.");
+                    yield break;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Exception {e.Message} on origin={origin}&destination={destination}&dateOut={dateOut}");
+                    yield break;
+                }
 
                 foreach (var tripDate in tripDates)
                 {

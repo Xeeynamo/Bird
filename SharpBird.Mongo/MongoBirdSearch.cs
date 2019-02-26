@@ -62,7 +62,7 @@ namespace SharpBird.Mongo
             {
                 result = GetUncachedItems(origin, destination, startDate)
                     .ToList();
-                
+
                 AddItemsToCache(result, origin, destination);
             }
             catch (BlacklistedException e)
