@@ -9,7 +9,7 @@ using SharpBird.Models;
 
 namespace SharpBird.Mongo
 {
-    public class MongoBirdSearch : IBirdSearch
+    public class MongoBirdSearch : IBirdSearch, IBirdStatistics
     {
         private class RecordInfo
         {
@@ -72,6 +72,36 @@ namespace SharpBird.Mongo
             }
 
             return result;
+        }
+
+        public IEnumerable<FlightHistoryModel> GetHistory(string origin, string destination, DateTime startDate, DateTime endDate)
+        {
+            return _flights
+                .AsQueryable()
+                .Where(x => x.Origin == origin && x.Destination == destination && x.TimeDepartureUtc >= startDate && x.TimeDeparture < endDate.AddDays(1))
+                .OrderBy(x => x.TimeDepartureUtc)
+                .AsEnumerable()
+                .GroupBy(x => x.ProviderId)
+                .Where(x => x.Any())
+                .Select(x => new FlightHistoryModel()
+                {
+                    ProviderId = x.First().ProviderId,
+                    Provider = x.First().Provider,
+                    Origin = x.First().Origin,
+                    Destination = x.First().Destination,
+                    TimeDeparture = x.First().TimeDeparture,
+                    TimeArrival = x.First().TimeArrival,
+                    TimeDepartureUtc = x.First().TimeDepartureUtc,
+                    TimeArrivalUtc = x.First().TimeArrivalUtc,
+                    Duration = x.First().Duration,
+                    Segments = x.First().Segments,
+                    History = x.OrderBy(h => h.RegisteredDate).Select(h => new FlightHistoryEntryModel()
+                    {
+                        Price = h.Price,
+                        RemainingSeats = h.RemainingSeats,
+                        RegisteredDate = h.RegisteredDate
+                    }).ToList()
+                });
         }
 
         public void Drop()

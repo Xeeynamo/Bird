@@ -31,13 +31,10 @@ namespace SharpBird.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddTransient<IBirdSearch>(x =>
-                {
-                    var apiBird = new RyanBird();
-                    var dbBird = new MongoBirdSearch(apiBird, TimeSpan.FromHours(12), "bird");
-
-                    return dbBird;
-                })
+                .AddSingleton<RyanBird>()
+                .AddSingleton<MongoBirdSearch>(x => new MongoBirdSearch(x.GetService<RyanBird>(), TimeSpan.FromHours(12), "bird"))
+                .AddTransient<IBirdSearch>(x => x.GetService<MongoBirdSearch>())
+                .AddTransient<IBirdStatistics>(x => x.GetService<MongoBirdSearch>())
                 .AddMvc(options =>
                 {
                     options.ReturnHttpNotAcceptable = true;

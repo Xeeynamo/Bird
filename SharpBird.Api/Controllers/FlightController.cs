@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SharpBird.Api.ViewModels;
 using SharpBird.Api.Utils;
+using SharpBird.Models;
 using SharpBird.Mongo;
 using SharpBird.Ryan;
 
@@ -14,10 +16,12 @@ namespace SharpBird.Api.Controllers
     public class FlightController : ControllerBase
     {
         private readonly IBirdSearch _birdSearch;
+        private readonly IBirdStatistics _birdStatistics;
 
-        public FlightController(IBirdSearch birdSearch)
+        public FlightController(IBirdSearch birdSearch, IBirdStatistics birdStatistics)
         {
             _birdSearch = birdSearch;
+            _birdStatistics = birdStatistics;
         }
 
         [HttpGet]
@@ -52,10 +56,13 @@ namespace SharpBird.Api.Controllers
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        [HttpGet("{date}")]
+        public IEnumerable<FlightHistoryModel> GetHistory(
+            DateTime date,
+            [FromQuery] string origin = "STN",
+            [FromQuery] string destination = "BDS")
         {
-            return "value";
+            return _birdStatistics.GetHistory(origin, destination, date, date);
         }
 
         // POST api/values
